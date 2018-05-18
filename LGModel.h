@@ -26,8 +26,6 @@ public:
 
     double temp;
 
-    double mu,lambda; // model parameters
-
     double get_energy(double,int*,int,double&); // Landau Ginzburg energy
 
     ~LGModel(); 

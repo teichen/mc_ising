@@ -30,24 +30,15 @@ using namespace std;
 LGModel::LGModel()
 {
     L = lattice.L; // length of lattice (number of sites)
-
     dim = lattice.dim; // dimensionality of lattice
 
-    temp = 1.0;
-
-    lambda = 0.221; // Pawley et al. 1984 MCRG benchmark
-    mu = 0.0;
-
+    temp = 1.0; // temperature
 }
 
-double LGModel::get_energy(double lambda_in, int* n, int ncell, double& etot) // Landau Ginzburg energy
+double LGModel::get_energy(double lambda, int* n, int ncell, double& etot) // Landau Ginzburg energy
 {
-    lambda = 0.221 + 0.00001*lambda_in;
-
-    // position n -> (x*L^2+y*L+z)
-    // z = i % L;
-    // y = (i-z) % pow(L,2);
-    // x = (i-z-y*L) % pow(L,dim);
+    double mu;
+    mu = 0.0;
 
     double eLG,e2,emu;
     eLG = 0.0; e2 = 0.0; emu = 0.0;
@@ -93,6 +84,11 @@ double LGModel::get_energy(double lambda_in, int* n, int ncell, double& etot) //
 
     emu = mu*ni; 
     eLG = mu*ni;
+
+    // position n -> (x*L^2+y*L+z)
+    // z = i % L;
+    // y = (i-z) % pow(L,2);
+    // x = (i-z-y*L) % pow(L,dim);
 
     k = ncell % L;
     j = (int)((ncell-k)/L) % L;
