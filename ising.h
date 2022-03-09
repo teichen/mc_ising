@@ -11,6 +11,8 @@
 #include "LGModel.h"
 #include "MonteCarlo.h"
 
+#include <iostream>
+
 using namespace std;
 
 class ising

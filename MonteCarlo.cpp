@@ -8,6 +8,8 @@
 */
 #include "MonteCarlo.h"
 
+#include <iostream>
+
 using namespace std;
 
 MonteCarlo::MonteCarlo()

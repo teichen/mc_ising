@@ -12,16 +12,14 @@
 #include <fstream>
 #include <time.h>
 #include <math.h>
+#include <iostream>
 
 using namespace std;
 
 SimSpace::SimSpace()
 {
-    //L = 8;
-    L = 16;
-    //L = 32;
+    L = 8;
     dim = 3;
-
 }
 
 SimSpace::~SimSpace()

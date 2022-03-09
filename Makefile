@@ -8,10 +8,10 @@ SHELL = /bin/sh
 
 OBJS_MC = main.o ising.o SimSpace.o MonteCarlo.o LGModel.o
 OBJS_SNAP = snapshot.o Visualizer.o SimSpace.o MonteCarlo.o
-CFLAGS = -g -openmp
-CC = icpc
+CFLAGS =
+CC = clang++
 INCLUDES = 
-LIBS = 
+LIBS =
 
 all:isingSim snapshot
 

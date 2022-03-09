@@ -7,6 +7,8 @@
 #ifndef _SIMSPACE
 #define _SIMSPACE
 
+#include <iostream>
+
 using namespace std;
 
 class SimSpace

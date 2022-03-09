@@ -104,7 +104,7 @@ void Visualizer::initarrays()
 
 Visualizer::~Visualizer()
 {
-    if(mem_test=true)
+    if(mem_test==true)
     {
     delete [] n;
     cout << "Deallocate Visualizer memory" << endl;

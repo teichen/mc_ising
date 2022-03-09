@@ -7,6 +7,8 @@
 #ifndef _MONTECARLO
 #define _MONTECARLO
 
+#include <iostream>
+
 using namespace std;
 
 class MonteCarlo

@@ -10,6 +10,8 @@
 #include "SimSpace.h"
 #include "MonteCarlo.h"
 
+#include <iostream>
+
 using namespace std;
 
 class Visualizer

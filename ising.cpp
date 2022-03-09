@@ -30,8 +30,6 @@ using std::endl;
 using std::ifstream;
 #include <cstring>
 
-#include <omp.h>
-
 const double PI = 3.1415926535897932384626433832795028841971693;
 
 //-----------------------------------------------------------------//
@@ -567,7 +565,7 @@ void ising::initarrays()
 
 ising::~ising()
 {
-    if(mem_test=true)
+    if(mem_test==true)
     {
     delete [] n;
     delete [] n0;

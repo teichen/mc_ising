@@ -9,6 +9,8 @@
 
 #include "SimSpace.h"
 
+#include <iostream>
+
 using namespace std;
 
 class LGModel
