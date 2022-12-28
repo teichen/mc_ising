@@ -56,7 +56,6 @@ public:
 
     void initarrays();
     void glauber_flip(double,int);
-    double separation(double[3],double[3]);
 
     double eLG_i,etot_i,eLG_f,etot_f;
 

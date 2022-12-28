@@ -1,7 +1,6 @@
 SHELL = /bin/sh
 
 # make all
-# make install
 # make clean
 # make isingSim
 # make snapshot

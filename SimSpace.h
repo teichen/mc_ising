@@ -24,6 +24,8 @@ public:
     int dim; // dimensionality of lattice
     int neighbors;
 
+    double separation(double[3],double[3]);
+
     ~SimSpace(); 
 
 private:
