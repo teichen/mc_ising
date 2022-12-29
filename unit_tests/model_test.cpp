@@ -1,15 +1,19 @@
 #include <iostream>
 #include <cassert>
+#include <math.h>
 #include "../SimSpace.h"
+#include "../LGModel.h"
 
 using namespace std;
 int main()
 {
+    // unit testing with run time asserts
+    // lattice tests:
     SimSpace lattice; // define the coarse lattice
-    int L; // length of lattice (number of sites)
-    int dim; // dimensionality of lattice
+    int L;            // length of lattice (number of sites)
+    int dim;          // dimensionality of lattice
 
-    L = lattice.L; // length of lattice (number of sites)
+    L = lattice.L;     // length of lattice (number of sites)
     dim = lattice.dim; // dimensionality of lattice
 
     assert(dim==3); // only supporting d=3
@@ -32,7 +36,30 @@ int main()
     d = lattice.separation(r1, r2);
     assert(d==1.0);
 
-    //assert(1==2); // run time assert
-    //static_assert(1==2, "1 = 2"); // compile time assert
-    //cout << "expression valid...execution continues.\n";
+    // model tests:
+    LGModel model;
+
+    double lambda;
+    lambda = 1.0;
+
+    double eLG,etot;
+    eLG = 0.0; etot = 0.0;
+
+    int n[(int)(pow(L,dim))];
+
+    int i;
+    for (i=0; i<(int)(pow(L,dim)); i++)
+    {
+        n[i] = 1;
+    }
+    for (i=0; i<(int)(pow(L,dim)); i++)
+    {
+        // calculate Landau Ginzburg and Gaussian energies only
+        eLG = model.get_energy(lambda,n,i);
+
+        etot = etot + eLG;
+
+    }
+    assert(etot==(double)(pow(L,dim) * dim * lambda));
+
 }

@@ -51,6 +51,29 @@ double SimSpace::separation(double r1[3], double r2[3])
     return r;
 }
 
+int* SimSpace::unpack_position(int n)
+{
+    // z = i % L;
+    // y = (i-z) % pow(L,2);
+    // x = (i-z-y*L) % pow(L,dim);
+    static int r[3];
+
+    r[2] = n % L;
+    r[1] = (int)((n - r[2]) / L) % L;
+    r[0] = (int)((n - r[2] - r[1] * L) / pow(L, 2)) % L;
+    
+    return r;
+}
+
+int SimSpace::flatten_position(int i, int j, int k)
+{
+    // position n -> (x*L^2+y*L+z)
+    int n;
+    n = (int)(i * pow(L, 2) + j * L + k);
+
+    return n;
+}
+
 SimSpace::~SimSpace()
 {
 }

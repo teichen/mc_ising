@@ -74,9 +74,9 @@ ising::ising()
 
 ising::ising(int run_flag, double mu, double lambda)
 {
-    L = lattice.L; // length of lattice (number of sites)
+    L   = lattice.L;   // length of lattice (number of sites)
     dim = lattice.dim; // dimensionality of lattice
-    nL = pow(L,dim);
+    nL  = pow(L,dim);
 
     temp = 1.0; // temperature
 
@@ -190,7 +190,7 @@ ising::ising(int run_flag, double mu, double lambda)
     for (i=0; i<(int)(pow(L,dim)); i++)
     {
         // calculate Landau Ginzburg and Gaussian energies only
-        eLG = model.get_energy(lambda,n,i,etot);
+        eLG = model.get_energy(lambda,n,i);
 
         e0_LG = e0_LG + eLG;
 
@@ -320,7 +320,7 @@ ising::ising(int run_flag, double mu, double lambda)
     for (i=0; i<(int)(pow(L,dim)); i++)
     {
         // calculate Landau Ginzburg and Gaussian energies only
-        eLG = model.get_energy(lambda,n,i,etot);
+        eLG = model.get_energy(lambda,n,i);
 
         e0_LG = e0_LG + eLG;
 
@@ -378,10 +378,8 @@ void ising::glauber_flip(double lambda, int i)
     double de,etmp;
     de = 0.0; etmp = 0.0;
 
-    double ri[3];
     double rj[3];
 
-    ri[0] = 0.0; ri[1] = 0.0; ri[2] = 0.0;
     rj[0] = 0.0; rj[1] = 0.0; rj[2] = 0.0;
 
     int cc;
@@ -397,18 +395,12 @@ void ising::glauber_flip(double lambda, int i)
     eLG_i = 0.0;
 
     // calculate Landau Ginzburg and Gaussian energies only
-    eLG_i = model.get_energy(lambda,n,i,etot_i);
+    eLG_i = model.get_energy(lambda,n,i);
 
     // add energy of backward neighboring cells
 
-    // position n -> (x*L^2+y*L+z)
-    // z = i % L;
-    // y = (i-z) % pow(L,2);
-    // x = (i-z-y*L) % pow(L,dim);
-
-    ri[2] = (double)(i % L);
-    ri[1] = (double)(((i-(i % L))/L) % L);
-    ri[0] = (double)((int)((i-(i % L)-(((i-(i % L))/L) % L)*L)/pow(L,2)) % L);
+    int* ri;
+    ri = lattice.unpack_position(i);
 
     int ncell;
 
@@ -420,7 +412,7 @@ void ising::glauber_flip(double lambda, int i)
     {
         ncell = (int)((ri[0]-1)*pow(L,2)+ri[1]*L+ri[2]);
     }
-    etmp = model.get_energy(lambda,n,ncell,etmp);
+    etmp = model.get_energy(lambda,n,ncell);
     eLG_i = eLG_i + etmp;
 
     if (ri[1]==0)
@@ -432,7 +424,7 @@ void ising::glauber_flip(double lambda, int i)
         ncell = (int)(ri[0]*pow(L,2)+(ri[1]-1)*L+ri[2]);
     }
 
-    etmp = model.get_energy(lambda,n,ncell,etmp);
+    etmp = model.get_energy(lambda,n,ncell);
     eLG_i = eLG_i + etmp;
 
     if (ri[2]==0)
@@ -443,7 +435,7 @@ void ising::glauber_flip(double lambda, int i)
     {
         ncell = (int)(ri[0]*pow(L,2)+ri[1]*L+(ri[2]-1));
     }
-    etmp = model.get_energy(lambda,n,ncell,etmp);
+    etmp = model.get_energy(lambda,n,ncell);
     eLG_i = eLG_i + etmp;
 
     if (n[i]==(-1))
@@ -457,7 +449,7 @@ void ising::glauber_flip(double lambda, int i)
 
     eLG_f = 0.0;
 
-    eLG_f = model.get_energy(lambda,n,i,etot_f);
+    eLG_f = model.get_energy(lambda,n,i);
 
     if (ri[0]==0)
     {
@@ -467,7 +459,7 @@ void ising::glauber_flip(double lambda, int i)
     {
         ncell = (int)((ri[0]-1)*pow(L,2)+ri[1]*L+ri[2]);
     }
-    etmp = model.get_energy(lambda,n,ncell,etmp);
+    etmp = model.get_energy(lambda,n,ncell);
     eLG_f = eLG_f + etmp;
 
     if (ri[1]==0)
@@ -478,7 +470,7 @@ void ising::glauber_flip(double lambda, int i)
     {
         ncell = (int)(ri[0]*pow(L,2)+(ri[1]-1)*L+ri[2]);
     }
-    etmp = model.get_energy(lambda,n,ncell,etmp);
+    etmp = model.get_energy(lambda,n,ncell);
     eLG_f = eLG_f + etmp;
 
     if (ri[2]==0)
@@ -489,7 +481,7 @@ void ising::glauber_flip(double lambda, int i)
     {
         ncell = (int)(ri[0]*pow(L,2)+ri[1]*L+(ri[2]-1));
     }
-    etmp = model.get_energy(lambda,n,ncell,etmp);
+    etmp = model.get_energy(lambda,n,ncell);
     eLG_f = eLG_f + etmp;
 
     eLG = eLG + (eLG_f-eLG_i);

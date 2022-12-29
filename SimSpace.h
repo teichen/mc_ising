@@ -26,6 +26,10 @@ public:
 
     double separation(double[3],double[3]);
 
+    int* unpack_position(int);
+
+    int flatten_position(int, int, int);
+
     ~SimSpace(); 
 
 private:

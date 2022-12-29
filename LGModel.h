@@ -23,12 +23,10 @@ public:
     LGModel(); 
 
     SimSpace lattice; // define the coarse lattice
-    int L; // length of lattice (number of sites)
-    int dim; // dimensionality of lattice
+    int L;            // length of lattice (number of sites)
+    int dim;          // dimensionality of lattice
 
-    double temp;
-
-    double get_energy(double,int*,int,double&); // Landau Ginzburg energy
+    double get_energy(double,int*,int); // Landau Ginzburg energy
 
     ~LGModel(); 
 

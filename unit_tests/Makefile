@@ -3,7 +3,7 @@ SHELL = /bin/sh
 # make test
 # make clean
 
-OBJS_TEST = model_test.o ../SimSpace.o
+OBJS_TEST = model_test.o ../SimSpace.o ../LGModel.o
 CFLAGS =
 CC = clang++
 INCLUDES =
