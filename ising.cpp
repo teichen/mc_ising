@@ -100,28 +100,10 @@ ising::ising(int run_flag, double mu, double lambda)
         exit(1);
     }
 
-    // lattice position working arrays
-    double ri[3];
-    double rj[3];
-
-    ri[0] = 0.0; ri[1] = 0.0; ri[2] = 0.0;
-    rj[0] = 0.0; rj[1] = 0.0; rj[2] = 0.0;
-
-    // distance between lattice cells
-    double r;
-    r = 0.0;
-
-    int dimR;
-    dimR = 0;
-
     int i,j,k;
     i = 0; j = 0; k = 0;
 
-    int di,dj,dk;
-    di = 0; dj = 0; dk = 0;
-
     int ncell;
-    ncell = 0;
 
     srand (time(NULL)+lambda); // re-initialize random seed
 
@@ -201,13 +183,11 @@ ising::ising(int run_flag, double mu, double lambda)
     etot = eLG;
     e0 = etot;
 
-    nchange = 0;
-
     // print Sampling trajectory energies
 
     cout << "## Monte Carlo Trajectory ##" << endl;
-    cout << "    trial nchange E(LG) E(TOT)" << endl;
-    cout << "    " << 0 << "    " << nchange << "    " << 
+    cout << "    trial E(LG) E(TOT)" << endl;
+    cout << "    " << 0 << "    " << 
                       eLG << "    " << etot << endl;
 
 
@@ -219,8 +199,6 @@ ising::ising(int run_flag, double mu, double lambda)
     e0_LG = eLG;
 
     int t;
-    int c;
-    int cc;
 
     double de,etmp;
     de = 0.0; etmp = 0.0;
@@ -236,7 +214,6 @@ ising::ising(int run_flag, double mu, double lambda)
         //cvec[i] = rand() % nvols;
         rnvec[i] = (rand() % 1000)*0.001;
         nvec[i] = rand() % (int)(pow(L,dim));
-
     }
 
     for (t=0; t<tsteps; t++)
@@ -247,48 +224,53 @@ ising::ising(int run_flag, double mu, double lambda)
             rn_flip[i] = (rand() % 1000)*0.001;
         }
 
-        nchange = 0;
+        // even x/z sweep, all y
+        for (i=0; i<(int)(L/2); i++)
+        {
+            for (j=0; j<L; j++)
+            {
+                for (k=0; k<(int)(L/2); k++)
+                {
+                    ncell = lattice.flatten_position(2*i, j, 2*k);
+                    glauber_flip(lambda,ncell);
+                }
+            }
+        }
 
+        // odd x/z sweep, all y
         for (i=0; i<(int)(L/2); i++)
         {
             for (j=0; j<L; j++)
             {
                 for (k=0; k<(int)(L/2); k++)
                 {
-                    ncell = (2*i)*pow(L,2)+j*L+(2*k);
+                    ncell = lattice.flatten_position(2*i+1, j, 2*k+1);
                     glauber_flip(lambda,ncell);
                 }
             }
         }
+
+        // odd x even z sweep, all y
         for (i=0; i<(int)(L/2); i++)
         {
             for (j=0; j<L; j++)
             {
                 for (k=0; k<(int)(L/2); k++)
                 {
-                    ncell = (2*i+1)*pow(L,2)+j*L+(2*k+1);
+                    ncell = lattice.flatten_position(2*i+1, j, 2*k);
                     glauber_flip(lambda,ncell);
                 }
             }
         }
+       
+        // even x odd z sweep, all y
         for (i=0; i<(int)(L/2); i++)
         {
             for (j=0; j<L; j++)
             {
                 for (k=0; k<(int)(L/2); k++)
                 {
-                    ncell = (2*i+1)*pow(L,2)+j*L+(2*k);
-                    glauber_flip(lambda,ncell);
-                }
-            }
-        }
-        for (i=0; i<(int)(L/2); i++)
-        {
-            for (j=0; j<L; j++)
-            {
-                for (k=0; k<(int)(L/2); k++)
-                {
-                    ncell = (2*i)*pow(L,2)+j*L+(2*k+1);
+                    ncell = lattice.flatten_position(2*i, j, 2*k+1);
                     glauber_flip(lambda,ncell);
                 }
             }
@@ -305,9 +287,8 @@ ising::ising(int run_flag, double mu, double lambda)
 
             ndump.close();
 
-            cout << "    " << t+1 << "    " << nchange << "    " << 
+            cout << "    " << t+1 << "    " << 
                               eLG << "    " << etot << endl;
-
         }
     }
 
@@ -378,13 +359,6 @@ void ising::glauber_flip(double lambda, int i)
     double de,etmp;
     de = 0.0; etmp = 0.0;
 
-    double rj[3];
-
-    rj[0] = 0.0; rj[1] = 0.0; rj[2] = 0.0;
-
-    int cc;
-    cc = 0;
-
     double r;
     r = 0.0;
 
@@ -402,41 +376,14 @@ void ising::glauber_flip(double lambda, int i)
     int* ri;
     ri = lattice.unpack_position(i);
 
-    int ncell;
+    int* nn;
+    nn = lattice.nearest_neighbors(n, ri);
 
-    if (ri[0]==0)
+    for (j=0; j<dim; j++)
     {
-        ncell = (int)((L-1)*pow(L,2)+ri[1]*L+ri[2]);
+        etmp = model.get_energy(lambda, n, nn[j]);
+        eLG_i = eLG_i + etmp;
     }
-    else
-    {
-        ncell = (int)((ri[0]-1)*pow(L,2)+ri[1]*L+ri[2]);
-    }
-    etmp = model.get_energy(lambda,n,ncell);
-    eLG_i = eLG_i + etmp;
-
-    if (ri[1]==0)
-    {
-        ncell = (int)(ri[0]*pow(L,2)+(L-1)*L+ri[2]);
-    }
-    else
-    {
-        ncell = (int)(ri[0]*pow(L,2)+(ri[1]-1)*L+ri[2]);
-    }
-
-    etmp = model.get_energy(lambda,n,ncell);
-    eLG_i = eLG_i + etmp;
-
-    if (ri[2]==0)
-    {
-        ncell = (int)(ri[0]*pow(L,2)+ri[1]*L+(L-1));
-    }
-    else
-    {
-        ncell = (int)(ri[0]*pow(L,2)+ri[1]*L+(ri[2]-1));
-    }
-    etmp = model.get_energy(lambda,n,ncell);
-    eLG_i = eLG_i + etmp;
 
     if (n[i]==(-1))
     {
@@ -451,38 +398,11 @@ void ising::glauber_flip(double lambda, int i)
 
     eLG_f = model.get_energy(lambda,n,i);
 
-    if (ri[0]==0)
+    for (j=0; j<dim; j++)
     {
-        ncell = (int)((L-1)*pow(L,2)+ri[1]*L+ri[2]);
+        etmp = model.get_energy(lambda, n, nn[j]);
+        eLG_f = eLG_f + etmp;
     }
-    else
-    {
-        ncell = (int)((ri[0]-1)*pow(L,2)+ri[1]*L+ri[2]);
-    }
-    etmp = model.get_energy(lambda,n,ncell);
-    eLG_f = eLG_f + etmp;
-
-    if (ri[1]==0)
-    {
-        ncell = (int)(ri[0]*pow(L,2)+(L-1)*L+ri[2]);
-    }
-    else
-    {
-        ncell = (int)(ri[0]*pow(L,2)+(ri[1]-1)*L+ri[2]);
-    }
-    etmp = model.get_energy(lambda,n,ncell);
-    eLG_f = eLG_f + etmp;
-
-    if (ri[2]==0)
-    {
-        ncell = (int)(ri[0]*pow(L,2)+ri[1]*L+(L-1));
-    }
-    else
-    {
-        ncell = (int)(ri[0]*pow(L,2)+ri[1]*L+(ri[2]-1));
-    }
-    etmp = model.get_energy(lambda,n,ncell);
-    eLG_f = eLG_f + etmp;
 
     eLG = eLG + (eLG_f-eLG_i);
     etot = eLG;
@@ -504,8 +424,6 @@ void ising::glauber_flip(double lambda, int i)
         e0 = etot;
 
         e0_LG = eLG;
-
-        nchange = 1;
     }
     else
     {

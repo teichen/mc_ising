@@ -74,6 +74,39 @@ int SimSpace::flatten_position(int i, int j, int k)
     return n;
 }
 
+int* SimSpace::nearest_neighbors(int* n, int* r)
+{
+    static int nn[3];
+
+    if (r[0] == (L-1))
+    {
+        nn[0] = n[(int)(0*pow(L,2) + r[1]*L + r[2])];
+    }
+    else
+    {
+        nn[0] = n[(int)((r[0] + 1)*pow(L,2) + r[1]*L + r[2])];
+    }
+    if (r[1] == (L-1))
+    {
+        nn[1] = n[(int)(r[0]*pow(L,2) + 0*L + r[2])];
+    }
+    else
+    {
+        nn[1] = n[(int)(r[0]*pow(L,2) + (r[1] + 1)*L + r[2])];
+    }
+    if (r[2] == (L-1))
+    {
+        nn[2] = n[(int)(r[0]*pow(L,2) + r[1]*L + 0)];
+    }
+    else
+    {
+        nn[2] = n[(int)(r[0]*pow(L,2) + r[1]*L + r[2]+1)];
+    }
+
+    return nn;
+}
+
+
 SimSpace::~SimSpace()
 {
 }

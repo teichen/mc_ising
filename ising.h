@@ -48,8 +48,6 @@ public:
 
     double e0,e0_LG;
 
-    int nchange;
-
     int n_rn;
     double rnvec[10000];
     double rn_flip[32*32*32];
