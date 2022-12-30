@@ -6,7 +6,7 @@
 
     mu is an external potential,
     lambda tunes the nearest-neighbor interaction strength,
-    run_flag=1 signals if a restart file should be read.
+    restart=True signals if a restart file should be read.
 
     This program was funded by Adam P. Willard
 */
@@ -33,28 +33,28 @@ int main(int argc, char* argv[])
     if (argc != 4)
     {
         if (argv[0])
-            std::cout << "Usage: " << argv[0] << " <run_flag> <mu> <lambda>" << '\n';
+            std::cout << "Usage: " << argv[0] << " <restart> <logging> <lambda>" << '\n';
         else
-            std::cout << "Usage: isingSim <run_flag> <mu> <lambda>" << '\n';
+            std::cout << "Usage: isingSim <restart> <logging> <lambda>" << '\n';
         
         exit(1);
     }
 
-    std::stringstream convert1(argv[1]);
-    std::stringstream convert2(argv[2]);
-    std::stringstream convert3(argv[3]);
+    std::stringstream restart_input(argv[1]);
+    std::stringstream logging_input(argv[2]);
+    std::stringstream lambda_input(argv[3]);
 
-    int run_flag;
-    double mu,lambda;
+    bool restart, logging;
+    double lambda;
 
-    if (!(convert1 >> run_flag))
-        run_flag = -1;
-    if (!(convert2 >> mu))
-        mu = -1;
-    if (!(convert3 >> lambda))
+    if (!(restart_input >> restart))
+        restart = false;
+    if (!(logging_input >> logging))
+        logging = false;
+    if (!(lambda_input >> lambda))
         lambda = -1;
 
-    ising mycalcs(run_flag,mu,lambda); 
+    ising glauber_calcs(restart,logging,lambda); 
 
     cout << "Program Exiting..." << endl;
     cout << "" << endl;

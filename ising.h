@@ -23,7 +23,7 @@ public:
     bool mem_test;
 
     ising();
-    ising(int,double,double);
+    ising(bool,bool,double);
 
     // ----------------------------------------------- //
 
@@ -56,6 +56,9 @@ public:
     void glauber_flip(double,int);
 
     double eLG_i,etot_i,eLG_f,etot_f;
+
+    void read_set_field(int*);
+    void write_field(int*,string);
 
     ~ising(); 
 

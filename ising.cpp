@@ -4,9 +4,8 @@
     This program executes Monte Carlo sampling of a
     three-dimensional Ising field.
 
-    mu is an external potential,
     lambda tunes the nearest-neighbor interaction strength,
-    run_flag=1 signals if a restart file should be read.
+    restart=True signals if a restart file should be read.
 
     This program was funded by Adam P. Willard
 */
@@ -72,7 +71,7 @@ ising::ising()
 {
 }
 
-ising::ising(int run_flag, double mu, double lambda)
+ising::ising(bool restart, bool logging, double lambda)
 {
     L   = lattice.L;   // length of lattice (number of sites)
     dim = lattice.dim; // dimensionality of lattice
@@ -84,8 +83,6 @@ ising::ising(int run_flag, double mu, double lambda)
     twrite = mc.twrite; // write every twrite steps
 
     n_rn = 10000; 
-
-    // ----------------------------------------------- //
 
     mem_test = false;
     initarrays();
@@ -107,53 +104,34 @@ ising::ising(int run_flag, double mu, double lambda)
 
     srand (time(NULL)+lambda); // re-initialize random seed
 
-    // output header
-    cout << "## System Parameters ##" << endl;
-    cout << "    L=" << L << ", dim=" << dim << endl;
-    cout << "" << endl;
-    cout << "## Monte Carlo Parameters ##" << endl;
-    cout << "    tsteps=" << tsteps << endl;
-    cout << "" << endl;
+    if(logging)
+    {
+        // output header
+        cout << "## System Parameters ##" << endl;
+        cout << "    L=" << L << ", dim=" << dim << endl;
+        cout << "" << endl;
+        cout << "## Monte Carlo Parameters ##" << endl;
+        cout << "    tsteps=" << tsteps << endl;
+        cout << "" << endl;
 
-    cout << "lambda=" << lambda << endl;
-    cout << "" << endl;
-
-    std::ostringstream filenameStream;
-    std:string filename;
-
-    ifstream fin;
-    string line;
-
-    std::ofstream ndump;
+        cout << "lambda=" << lambda << endl;
+        cout << "" << endl;
+    }
 
     // initial Ising field
 
-    if (run_flag==0)
+    if(restart)
+    {
+        // read in data
+        read_set_field(n);
+    }
+    else
     {
         for (j=0; j<(int)(pow(L,dim)); j++)
         {
             //n[j] = 1;
             n[j] = 2*(rand() % 2)-1;
         }
-    }
-    else 
-    {
-        // read in data
-
-        filenameStream << "./n_restart" << run_flag-1 << ".dat";
-        filename = filenameStream.str();
-
-        fin.open(filename.c_str());
-
-        j = 0;
-        while( getline(fin,line) )
-        {
-            n[j] = atoi (line.c_str());
-            j++;
-        }
-
-        fin.close();
-        filenameStream.str("");
     }
 
     for (j=0; j<(int)(pow(L,dim)); j++)
@@ -163,10 +141,7 @@ ising::ising(int run_flag, double mu, double lambda)
 
     // evaluate initial energy piece-wise by volume
 
-    etot = 0.0;
-    eLG = 0.0; 
-
-    e0 = etot;
+    eLG   = 0.0; 
     e0_LG = eLG;
 
     for (i=0; i<(int)(pow(L,dim)); i++)
@@ -180,22 +155,18 @@ ising::ising(int run_flag, double mu, double lambda)
 
     eLG = e0_LG;
 
-    etot = eLG;
-    e0 = etot;
-
-    // print Sampling trajectory energies
-
-    cout << "## Monte Carlo Trajectory ##" << endl;
-    cout << "    trial E(LG) E(TOT)" << endl;
-    cout << "    " << 0 << "    " << 
-                      eLG << "    " << etot << endl;
-
+    if(logging)
+    {
+        // print Sampling trajectory energies
+        cout << "## Monte Carlo Trajectory ##" << endl;
+        cout << "    trial E(LG)" << endl;
+        cout << "    " << 0 << "    " << eLG << endl;
+    }
 
     int taccept;
 
     taccept = 0; // number of accepted moves
 
-    e0 = etot;
     e0_LG = eLG;
 
     int t;
@@ -278,24 +249,16 @@ ising::ising(int run_flag, double mu, double lambda)
 
         if ( ((t+1) % twrite)==0)
         {
-            ndump.open("n.dat", std::ios_base::app);
-
-            for (i=0; i<(int)(pow(L,dim)); i++)
+            if(logging)
             {
-                ndump << n[i] << "\n";
+                write_field(n, "n.dat");
+                cout << "    " << t+1 << "    " << eLG << endl;
             }
-
-            ndump.close();
-
-            cout << "    " << t+1 << "    " << 
-                              eLG << "    " << etot << endl;
         }
     }
 
-    etot = 0.0;
     eLG = 0.0; 
 
-    e0 = etot;
     e0_LG = eLG;
 
     for (i=0; i<(int)(pow(L,dim)); i++)
@@ -309,30 +272,25 @@ ising::ising(int run_flag, double mu, double lambda)
 
     eLG = e0_LG;
 
-    etot = eLG;
-    e0 = etot;
-
-    cout << "## Monte Carlo Trajectory ##" << endl;
-    cout << "    trial E(LG) E(TOT)" << endl;
-    cout << "    " << 0 << "    " <<
-                      eLG << "    " << etot << endl;
-
-    // write restart files
-    ndump.open("n_restart.dat", std::ios_base::trunc | std::ios_base::out);
-
-    for (i=0; i<(int)(pow(L,dim)); i++)
+    if(logging)
     {
-        ndump << n[i] << "\n";
+        cout << "## Monte Carlo Trajectory ##" << endl;
+        cout << "    trial E(LG)" << endl;
+        cout << "    " << 0 << "    " << eLG << endl;
     }
 
-    ndump.close();
+    if(logging)
+    {
+        // write restart files
+        write_field(n, "n_restart.dat");
 
-    std::ofstream edump;
-    edump.open("energy_restart.dat", std::ios_base::trunc | std::ios_base::out);
+        std::ofstream edump;
+        edump.open("energy_restart.dat", std::ios_base::trunc | std::ios_base::out);
 
-    edump << eLG << "\n" << etot << endl;
+        edump << eLG << "\n" << etot << endl;
 
-    edump.close();
+        edump.close();
+    }
 
     if(gettimeofday(&later,NULL)) //------------Stop clock --------------//
     {
@@ -342,13 +300,15 @@ ising::ising(int run_flag, double mu, double lambda)
 
     timeval_diff(&interval,&later,&earlier);
 
-    cout << "t = " << interval.tv_sec << "." <<
-         interval.tv_usec << " sec" << endl;
-    cout << " " << endl;
+    if(logging)
+    {
+        cout << "t = " << interval.tv_sec << "." <<
+             interval.tv_usec << " sec" << endl;
+        cout << " " << endl;
 
-    cout << "Accepted " << taccept << " Monte Carlo moves " << endl;
-    cout << " " << endl;
-
+        cout << "Accepted " << taccept << " Monte Carlo moves " << endl;
+        cout << " " << endl;
+    }
 }
 
 void ising::glauber_flip(double lambda, int i)
@@ -405,7 +365,6 @@ void ising::glauber_flip(double lambda, int i)
     }
 
     eLG = eLG + (eLG_f-eLG_i);
-    etot = eLG;
 
     de = eLG_f-eLG_i;
 
@@ -420,20 +379,58 @@ void ising::glauber_flip(double lambda, int i)
     if (rn <= boltz)
     {
         n0[i] = n[i];
-
-        e0 = etot;
-
         e0_LG = eLG;
     }
     else
     {
         n[i] = n0[i];
-
-        etot = e0;
-
         eLG = e0_LG;
     }
+}
 
+void ising::read_set_field(int* n)
+{
+    std::ostringstream filenameStream;
+    std:string filename;
+
+    ifstream fin;
+    string line;
+
+    filenameStream << "./n_restart.dat";
+    filename = filenameStream.str();
+
+    fin.open(filename.c_str());
+
+    int j = 0;
+    while( getline(fin,line) )
+    {
+        n[j] = atoi (line.c_str());
+        j++;
+    }
+
+    fin.close();
+    filenameStream.str("");
+}
+
+void ising::write_field(int* n, string filename)
+{
+    std::ofstream ndump;
+
+    if (filename.find("restart") != std::string::npos)
+    {
+        ndump.open(filename, std::ios_base::trunc | std::ios_base::out);
+    }
+    else
+    {
+        ndump.open(filename, std::ios_base::app);
+    }
+    
+    for (int i=0; i<(int)(pow(L,dim)); i++)
+    {
+        ndump << n[i] << "\n";
+    }
+
+    ndump.close();
 }
 
 void ising::initarrays()

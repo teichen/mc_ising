@@ -22,7 +22,6 @@ public:
 
     int L; // length of lattice (number of sites)
     int dim; // dimensionality of lattice
-    int neighbors;
 
     double separation(double[3],double[3]);
 

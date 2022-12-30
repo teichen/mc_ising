@@ -62,4 +62,5 @@ int main()
     }
     assert(etot==(double)(pow(L,dim) * dim * lambda));
 
+    return 0;
 }

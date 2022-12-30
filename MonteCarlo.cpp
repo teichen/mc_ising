@@ -15,8 +15,10 @@ using namespace std;
 MonteCarlo::MonteCarlo()
 {
     // Pawley et al. 1984 MCRG benchmark
-    tsteps = 2e6;
-    twrite = 1e4;
+    //tsteps = 2e6;
+    //twrite = 1e4;
+    tsteps = 10;
+    twrite = 10;
 
     //2.5e5 sweeps generate independent config. for L=64
     //5e5 sweeps for L=32

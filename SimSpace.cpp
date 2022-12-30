@@ -18,7 +18,8 @@ using namespace std;
 
 SimSpace::SimSpace()
 {
-    L = 8;
+    //L = 8;
+    L = 4;
     dim = 3;
 }
 

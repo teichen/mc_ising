@@ -21,7 +21,7 @@ snapshot:${OBJS_SNAP}
 	${CC} ${CFLAGS} ${INCLUDES} -o $@ ${OBJS_SNAP} ${LIBS}
 
 clean:
-	-rm -f *.o core *.core
+	-rm -f *.o core *.core *.dat
 
 .cpp.o:
 	${CC} ${CFLAGS} ${INCLUDES} -c $<
