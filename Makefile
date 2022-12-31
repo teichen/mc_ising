@@ -2,19 +2,19 @@ SHELL = /bin/sh
 
 # make all
 # make clean
-# make isingSim
+# make glauber_ising
 # make snapshot
 
-OBJS_MC = main.o ising.o SimSpace.o MonteCarlo.o LGModel.o
+OBJS_MC = main.o GlauberIsing.o SimSpace.o MonteCarlo.o IsingModel.o
 OBJS_SNAP = snapshot.o Visualizer.o SimSpace.o MonteCarlo.o
 CFLAGS =
 CC = clang++
 INCLUDES = 
 LIBS =
 
-all:isingSim snapshot
+all:glauber_ising snapshot
 
-isingSim:${OBJS_MC}
+glauber_ising:${OBJS_MC}
 	${CC} ${CFLAGS} ${INCLUDES} -o $@ ${OBJS_MC} ${LIBS}
 
 snapshot:${OBJS_SNAP}

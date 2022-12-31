@@ -1,12 +1,12 @@
 /*
     Copyright (C) 2018  Paul E. Teichen
 
-    The LGModel class calculates the Landau-Ginzburg
+    The IsingModel class calculates the Landau-Ginzburg
     energy (e.g. nearest-neighbor interactions).
 
     This program was funded by Adam P. Willard
 */
-#include "LGModel.h"
+#include "IsingModel.h"
 #include <cstdlib>
 #include <stdlib.h>
 #include <fstream>
@@ -25,13 +25,13 @@ const double PI = 3.1415926535897932384626433832795028841971693;
 
 using namespace std;
 
-LGModel::LGModel()
+IsingModel::IsingModel()
 {
     L    = lattice.L;   // length of lattice (number of sites)
     dim  = lattice.dim; // dimensionality of lattice
 }
 
-double LGModel::get_energy(double lambda, int* n, int ncell)
+double IsingModel::get_energy(double lambda, int* n, int ncell)
 /* Landau Ginzburg energy
 */
 {
@@ -58,7 +58,7 @@ double LGModel::get_energy(double lambda, int* n, int ncell)
 
 }
 
-LGModel::~LGModel()
+IsingModel::~IsingModel()
 {
 }
 

@@ -1,24 +1,24 @@
 SHELL = /bin/sh
 
 # make all
-# make model_test
 # make ising_test
+# make glauber_test
 # make clean
 
-OBJS_MODEL_TEST = model_test.o ../SimSpace.o ../LGModel.o
-OBJS_ISING_TEST = ising_test.o ../ising.o ../SimSpace.o ../MonteCarlo.o ../LGModel.o
+OBJS_MODEL_TEST = ising_test.o ../SimSpace.o ../IsingModel.o
+OBJS_GLAUBER_TEST = glauber_test.o ../GlauberIsing.o ../SimSpace.o ../MonteCarlo.o ../IsingModel.o
 CFLAGS =
 CC = clang++
 INCLUDES =
 LIBS =
 
-all:model_test ising_test
+all:ising_test glauber_test
 
-model_test:${OBJS_MODEL_TEST}
+ising_test:${OBJS_MODEL_TEST}
 	${CC} ${CFLAGS} ${INCLUDES} -o $@ ${OBJS_MODEL_TEST} ${LIBS}
 
-ising_test:${OBJS_ISING_TEST}
-	${CC} ${CFLAGS} ${INCLUDES} -o $@ ${OBJS_ISING_TEST} ${LIBS}
+glauber_test:${OBJS_GLAUBER_TEST}
+	${CC} ${CFLAGS} ${INCLUDES} -o $@ ${OBJS_GLAUBER_TEST} ${LIBS}
 
 clean:
 	-rm -f *.o core *.core *.dat

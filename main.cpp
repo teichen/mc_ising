@@ -21,7 +21,7 @@ using std::ifstream;
 #include <cstring>
 #include <cstdlib>
 
-#include "ising.h"
+#include "GlauberIsing.h"
 
 using namespace std;
 
@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
         if (argv[0])
             std::cout << "Usage: " << argv[0] << " <restart> <logging> <lambda>" << '\n';
         else
-            std::cout << "Usage: isingSim <restart> <logging> <lambda>" << '\n';
+            std::cout << "Usage: glauber_ising <restart> <logging> <lambda>" << '\n';
         
         exit(1);
     }
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     if (!(lambda_input >> lambda))
         lambda = -1;
 
-    ising glauber_calcs(restart,logging,lambda); 
+    GlauberIsing glauber_ising(restart,logging,lambda); 
 
     cout << "Program Exiting..." << endl;
     cout << "" << endl;

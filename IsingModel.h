@@ -3,9 +3,9 @@
 
     This program was funded by Adam P. Willard
 */
-// LGModel.h
-#ifndef _LGMODEL
-#define _LGMODEL
+// IsingModel.h
+#ifndef _ISINGMODEL
+#define _ISINGMODEL
 
 #include "SimSpace.h"
 
@@ -13,14 +13,14 @@
 
 using namespace std;
 
-class LGModel
+class IsingModel
 {
 
 public:
 
     bool mem_test;
 
-    LGModel(); 
+    IsingModel(); 
 
     SimSpace lattice; // define the coarse lattice
     int L;            // length of lattice (number of sites)
@@ -28,7 +28,7 @@ public:
 
     double get_energy(double,int*,int); // Landau Ginzburg energy
 
-    ~LGModel(); 
+    ~IsingModel(); 
 
 private:
 

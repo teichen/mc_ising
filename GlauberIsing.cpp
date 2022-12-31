@@ -9,7 +9,7 @@
 
     This program was funded by Adam P. Willard
 */
-#include "ising.h"
+#include "GlauberIsing.h"
 #include <cstdlib>
 #include <stdlib.h>
 #include <fstream>
@@ -67,11 +67,11 @@ timeval_diff(struct timeval *difference,
 
 using namespace std;
 
-ising::ising()
+GlauberIsing::GlauberIsing()
 {
 }
 
-ising::ising(bool restart, bool logging, double lambda)
+GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda)
 {
     L   = lattice.L;   // length of lattice (number of sites)
     dim = lattice.dim; // dimensionality of lattice
@@ -311,7 +311,7 @@ ising::ising(bool restart, bool logging, double lambda)
     }
 }
 
-void ising::glauber_flip(double lambda, int i)
+void GlauberIsing::glauber_flip(double lambda, int i)
 {
     int j,k;
     j = 0; k = 0;
@@ -388,7 +388,7 @@ void ising::glauber_flip(double lambda, int i)
     }
 }
 
-void ising::read_set_field(int* n)
+void GlauberIsing::read_set_field(int* n)
 {
     std::ostringstream filenameStream;
     std:string filename;
@@ -412,7 +412,7 @@ void ising::read_set_field(int* n)
     filenameStream.str("");
 }
 
-void ising::write_field(int* n, string filename)
+void GlauberIsing::write_field(int* n, string filename)
 {
     std::ofstream ndump;
 
@@ -433,7 +433,7 @@ void ising::write_field(int* n, string filename)
     ndump.close();
 }
 
-void ising::initarrays()
+void GlauberIsing::initarrays()
 {
     n = (int*) calloc (pow(L,dim), sizeof(int));
     n0 = (int*) calloc (pow(L,dim), sizeof(int));
@@ -441,14 +441,14 @@ void ising::initarrays()
     mem_test = true;
 }
 
-ising::~ising()
+GlauberIsing::~GlauberIsing()
 {
     if(mem_test==true)
     {
     delete [] n;
     delete [] n0;
 
-    cout << "Deallocate ising memory" << endl;
+    cout << "Deallocate GlauberIsing memory" << endl;
 
     }
 }

@@ -3,27 +3,27 @@
 
     This program was funded by Adam P. Willard
 */
-// ising.h
-#ifndef _ISING
-#define _ISING
+// GlauberIsing.h
+#ifndef _GLAUBERISING
+#define _GLAUBERISING
 
 #include "SimSpace.h"
-#include "LGModel.h"
+#include "IsingModel.h"
 #include "MonteCarlo.h"
 
 #include <iostream>
 
 using namespace std;
 
-class ising
+class GlauberIsing
 {
 
 public:
 
     bool mem_test;
 
-    ising();
-    ising(bool,bool,double);
+    GlauberIsing();
+    GlauberIsing(bool,bool,double);
 
     // ----------------------------------------------- //
 
@@ -37,7 +37,7 @@ public:
     int tsteps; // number of MC attempts
     int twrite; // write every twrite steps
 
-    LGModel model;
+    IsingModel model;
 
     double eLG,etot;
 
@@ -60,7 +60,7 @@ public:
     void read_set_field(int*);
     void write_field(int*,string);
 
-    ~ising(); 
+    ~GlauberIsing(); 
 
 private:
 

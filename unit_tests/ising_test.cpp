@@ -1,32 +1,66 @@
 #include <iostream>
 #include <cassert>
-using std::cerr;
-using std::cout;
-using std::endl;
 #include <math.h>
-#include "../ising.h"
+#include "../SimSpace.h"
+#include "../IsingModel.h"
 
 using namespace std;
 int main()
 {
     // unit testing with run time asserts
-    // ising tests:
-    bool restart, logging;
+    // lattice tests:
+    SimSpace lattice; // define the coarse lattice
+    int L;            // length of lattice (number of sites)
+    int dim;          // dimensionality of lattice
+
+    L = lattice.L;     // length of lattice (number of sites)
+    dim = lattice.dim; // dimensionality of lattice
+
+    assert(dim==3); // only supporting d=3
+
+    double r1[3], r2[3];
+    r1[0] = 0.0; r1[1] = 0.0; r1[2] = 0.0;
+    r2[0] = 0.0; r2[1] = 0.0; r2[2] = 0.0;
+
+    double d;
+    d = lattice.separation(r1, r2);
+
+    assert(d==0.0);
+
+    r2[0] = 1.0;
+    d = lattice.separation(r1, r2);
+    assert(d==1.0);
+
+    r2[0] = 0.0;
+    r1[0] = L-1;
+    d = lattice.separation(r1, r2);
+    assert(d==1.0);
+
+    // model tests:
+    IsingModel model;
+
     double lambda;
+    lambda = 1.0;
 
-    restart = 0;
-    logging = 0;
-    lambda  = 0.0;
+    double eLG,etot;
+    eLG = 0.0; etot = 0.0;
 
-    ising glauber_calcs(restart,logging,lambda); 
+    int n[(int)(pow(L,dim))];
 
-    int nsum = 0;
-    for (int i=0; i<(int)(glauber_calcs.nL); i++)
+    int i;
+    for (i=0; i<(int)(pow(L,dim)); i++)
     {
-        nsum += glauber_calcs.n[i];
+        n[i] = 1;
     }
-    cout << nsum << endl;
-    // assert(dim==3); // only supporting d=3
+    for (i=0; i<(int)(pow(L,dim)); i++)
+    {
+        // calculate Landau Ginzburg and Gaussian energies only
+        eLG = model.get_energy(lambda,n,i);
+
+        etot = etot + eLG;
+
+    }
+    assert(etot==(double)(pow(L,dim) * dim * lambda));
 
     return 0;
 }
