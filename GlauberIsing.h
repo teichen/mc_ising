@@ -23,18 +23,20 @@ public:
     bool mem_test;
 
     GlauberIsing();
-    GlauberIsing(bool,bool,double);
+    GlauberIsing(bool,bool,double,int);
 
-    // ----------------------------------------------- //
+    bool restart;
+    bool logging;
+    double lambda;
+    int tsteps;
+
+    void run(int);
 
     SimSpace lattice; // define the coarse lattice
     int L; // length of lattice (number of sites)
     int dim; // dimensionality of lattice
 
-    double temp;
-
     MonteCarlo mc; // Monte Carlo parameterization
-    int tsteps; // number of MC attempts
     int twrite; // write every twrite steps
 
     IsingModel model;
@@ -49,15 +51,17 @@ public:
     double e0,e0_LG;
 
     int n_rn;
-    double rnvec[10000];
     double rn_flip[32*32*32];
 
     void initarrays();
+
+    void glauber_sweep(double);
     void glauber_flip(double,int);
 
     double eLG_i,etot_i,eLG_f,etot_f;
 
     void read_set_field(int*);
+    void init_field(int*);
     void write_field(int*,string);
 
     ~GlauberIsing(); 

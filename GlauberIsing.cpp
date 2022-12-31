@@ -71,36 +71,24 @@ GlauberIsing::GlauberIsing()
 {
 }
 
-GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda)
+GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda, int tsteps)
 {
+    restart = restart;
+    logging = logging;
+    lambda  = lambda;
+    tsteps  = tsteps;
+
     L   = lattice.L;   // length of lattice (number of sites)
     dim = lattice.dim; // dimensionality of lattice
     nL  = pow(L,dim);
 
-    temp = 1.0; // temperature
-
-    tsteps = mc.tsteps; // number of MC attempts
+    //tsteps = mc.tsteps; // number of MC attempts
     twrite = mc.twrite; // write every twrite steps
 
     n_rn = 10000; 
 
     mem_test = false;
     initarrays();
-
-    struct timeval earlier;
-    struct timeval later;
-    struct timeval interval;
-
-    if(gettimeofday(&earlier,NULL)) //-----------Start clock ----------//
-    {
-        perror("third gettimeofday()");
-        exit(1);
-    }
-
-    int i,j,k;
-    i = 0; j = 0; k = 0;
-
-    int ncell;
 
     srand (time(NULL)+lambda); // re-initialize random seed
 
@@ -117,9 +105,23 @@ GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda)
         cout << "lambda=" << lambda << endl;
         cout << "" << endl;
     }
+    
+    run(tsteps);
+}
+
+void GlauberIsing::run(int tsteps)
+{
+    struct timeval earlier;
+    struct timeval later;
+    struct timeval interval;
+
+    if(gettimeofday(&earlier,NULL)) //-----------Start clock ----------//
+    {
+        perror("third gettimeofday()");
+        exit(1);
+    }
 
     // initial Ising field
-
     if(restart)
     {
         // read in data
@@ -127,30 +129,23 @@ GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda)
     }
     else
     {
-        for (j=0; j<(int)(pow(L,dim)); j++)
-        {
-            //n[j] = 1;
-            n[j] = 2*(rand() % 2)-1;
-        }
+        init_field(n);
     }
 
-    for (j=0; j<(int)(pow(L,dim)); j++)
+    int i;
+    for (i=0; i<(int)(pow(L, dim)); i++)
     {
-        n0[j] = n[j];
+        n0[i] = n[i];
     }
 
-    // evaluate initial energy piece-wise by volume
-
+    // evaluate initial energy
     eLG   = 0.0; 
     e0_LG = eLG;
 
     for (i=0; i<(int)(pow(L,dim)); i++)
     {
-        // calculate Landau Ginzburg and Gaussian energies only
         eLG = model.get_energy(lambda,n,i);
-
         e0_LG = e0_LG + eLG;
-
     }
 
     eLG = e0_LG;
@@ -159,100 +154,25 @@ GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda)
     {
         // print Sampling trajectory energies
         cout << "## Monte Carlo Trajectory ##" << endl;
-        cout << "    trial E(LG)" << endl;
-        cout << "    " << 0 << "    " << eLG << endl;
+        cout << "\ttrial\tE(LG)" << endl;
+        cout << "\t" << 0 << "\t" << eLG << endl;
     }
 
     int taccept;
-
     taccept = 0; // number of accepted moves
-
-    e0_LG = eLG;
 
     int t;
 
-    double de,etmp;
-    de = 0.0; etmp = 0.0;
-
-    double rn;
-
-    int nvec[n_rn];
-
-    double boltz;
-
-    for (i=0; i<n_rn; i++)
-    {
-        //cvec[i] = rand() % nvols;
-        rnvec[i] = (rand() % 1000)*0.001;
-        nvec[i] = rand() % (int)(pow(L,dim));
-    }
-
     for (t=0; t<tsteps; t++)
     {
-        // full Glauber sweep
-        for (i=0; i<nL; i++)
-        {
-            rn_flip[i] = (rand() % 1000)*0.001;
-        }
-
-        // even x/z sweep, all y
-        for (i=0; i<(int)(L/2); i++)
-        {
-            for (j=0; j<L; j++)
-            {
-                for (k=0; k<(int)(L/2); k++)
-                {
-                    ncell = lattice.flatten_position(2*i, j, 2*k);
-                    glauber_flip(lambda,ncell);
-                }
-            }
-        }
-
-        // odd x/z sweep, all y
-        for (i=0; i<(int)(L/2); i++)
-        {
-            for (j=0; j<L; j++)
-            {
-                for (k=0; k<(int)(L/2); k++)
-                {
-                    ncell = lattice.flatten_position(2*i+1, j, 2*k+1);
-                    glauber_flip(lambda,ncell);
-                }
-            }
-        }
-
-        // odd x even z sweep, all y
-        for (i=0; i<(int)(L/2); i++)
-        {
-            for (j=0; j<L; j++)
-            {
-                for (k=0; k<(int)(L/2); k++)
-                {
-                    ncell = lattice.flatten_position(2*i+1, j, 2*k);
-                    glauber_flip(lambda,ncell);
-                }
-            }
-        }
-       
-        // even x odd z sweep, all y
-        for (i=0; i<(int)(L/2); i++)
-        {
-            for (j=0; j<L; j++)
-            {
-                for (k=0; k<(int)(L/2); k++)
-                {
-                    ncell = lattice.flatten_position(2*i, j, 2*k+1);
-                    glauber_flip(lambda,ncell);
-                }
-            }
-        }
+        glauber_sweep(lambda);
 
         if ( ((t+1) % twrite)==0)
         {
             if(logging)
             {
                 write_field(n, "n.dat");
-                cout << "    " << t+1 << "    " << eLG << endl;
+                cout << "\t" << t+1 << "\t" << eLG << endl;
             }
         }
     }
@@ -263,11 +183,8 @@ GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda)
 
     for (i=0; i<(int)(pow(L,dim)); i++)
     {
-        // calculate Landau Ginzburg and Gaussian energies only
         eLG = model.get_energy(lambda,n,i);
-
         e0_LG = e0_LG + eLG;
-
     }
 
     eLG = e0_LG;
@@ -275,8 +192,8 @@ GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda)
     if(logging)
     {
         cout << "## Monte Carlo Trajectory ##" << endl;
-        cout << "    trial E(LG)" << endl;
-        cout << "    " << 0 << "    " << eLG << endl;
+        cout << "\ttrial\tE(LG)" << endl;
+        cout << "\t" << 0 << "\t" << eLG << endl;
     }
 
     if(logging)
@@ -308,6 +225,70 @@ GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda)
 
         cout << "Accepted " << taccept << " Monte Carlo moves " << endl;
         cout << " " << endl;
+    }
+}
+
+void GlauberIsing::glauber_sweep(double lambda)
+{
+    // full Glauber sweep
+    
+    int i, j, k, ncell;
+
+    for (i=0; i<nL; i++)
+    {
+        rn_flip[i] = (rand() % 1000) * 0.001;
+    }
+
+    // even x/z sweep, all y
+    for (i=0; i<(int)(L/2); i++)
+    {
+        for (j=0; j<L; j++)
+        {
+            for (k=0; k<(int)(L/2); k++)
+            {
+                ncell = lattice.flatten_position(2*i, j, 2*k);
+                glauber_flip(lambda, ncell);
+            }
+        }
+    }
+
+    // odd x/z sweep, all y
+    for (i=0; i<(int)(L/2); i++)
+    {
+        for (j=0; j<L; j++)
+        {
+            for (k=0; k<(int)(L/2); k++)
+            {
+                ncell = lattice.flatten_position(2*i+1, j, 2*k+1);
+                glauber_flip(lambda, ncell);
+            }
+        }
+    }
+
+    // odd x even z sweep, all y
+    for (i=0; i<(int)(L/2); i++)
+    {
+        for (j=0; j<L; j++)
+        {
+            for (k=0; k<(int)(L/2); k++)
+            {
+                ncell = lattice.flatten_position(2*i+1, j, 2*k);
+                glauber_flip(lambda, ncell);
+            }
+        }
+    }
+   
+    // even x odd z sweep, all y
+    for (i=0; i<(int)(L/2); i++)
+    {
+        for (j=0; j<L; j++)
+        {
+            for (k=0; k<(int)(L/2); k++)
+            {
+                ncell = lattice.flatten_position(2*i, j, 2*k+1);
+                glauber_flip(lambda, ncell);
+            }
+        }
     }
 }
 
@@ -370,10 +351,9 @@ void GlauberIsing::glauber_flip(double lambda, int i)
 
     // acceptance criteria
 
-    //rn = rnvec[rand() % n_rn];
     rn = rn_flip[i];
 
-    boltz = exp( -de/temp );
+    boltz = exp(-de); // temperature = 1.0
     // boltz = 1.0/(1.0+exp(de/temp));
 
     if (rn <= boltz)
@@ -410,6 +390,15 @@ void GlauberIsing::read_set_field(int* n)
 
     fin.close();
     filenameStream.str("");
+}
+
+void GlauberIsing::init_field(int* n)
+{
+    for (int j=0; j<(int)(pow(L,dim)); j++)
+    {
+        //n[j] = 1; // uniform
+        n[j] = 2*(rand() % 2)-1;
+    }
 }
 
 void GlauberIsing::write_field(int* n, string filename)

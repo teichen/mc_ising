@@ -30,12 +30,12 @@ int main(int argc, char* argv[])
     cout << "Program Running..." << endl;
     cout << "" << endl;
 
-    if (argc != 4)
+    if (argc != 5)
     {
         if (argv[0])
-            std::cout << "Usage: " << argv[0] << " <restart> <logging> <lambda>" << '\n';
+            std::cout << "Usage: " << argv[0] << " <restart> <logging> <lambda> <tsteps>" << '\n';
         else
-            std::cout << "Usage: glauber_ising <restart> <logging> <lambda>" << '\n';
+            std::cout << "Usage: glauber_ising <restart> <logging> <lambda> <tsteps>" << '\n';
         
         exit(1);
     }
@@ -43,9 +43,11 @@ int main(int argc, char* argv[])
     std::stringstream restart_input(argv[1]);
     std::stringstream logging_input(argv[2]);
     std::stringstream lambda_input(argv[3]);
+    std::stringstream tsteps_input(argv[4]);
 
     bool restart, logging;
     double lambda;
+    int tsteps;
 
     if (!(restart_input >> restart))
         restart = false;
@@ -53,8 +55,10 @@ int main(int argc, char* argv[])
         logging = false;
     if (!(lambda_input >> lambda))
         lambda = -1;
+    if (!(tsteps_input >> tsteps))
+        tsteps = -1;
 
-    GlauberIsing glauber_ising(restart,logging,lambda); 
+    GlauberIsing glauber_ising(restart,logging,lambda,tsteps); 
 
     cout << "Program Exiting..." << endl;
     cout << "" << endl;
