@@ -144,7 +144,7 @@ void GlauberIsing::run(int tsteps)
 
     for (i=0; i<(int)(pow(L,dim)); i++)
     {
-        eLG = model.get_energy(lambda,n,i);
+        eLG = model.get_energy(lambda, n, i);
         e0_LG = e0_LG + eLG;
     }
 
@@ -183,7 +183,7 @@ void GlauberIsing::run(int tsteps)
 
     for (i=0; i<(int)(pow(L,dim)); i++)
     {
-        eLG = model.get_energy(lambda,n,i);
+        eLG = model.get_energy(lambda, n, i);
         e0_LG = e0_LG + eLG;
     }
 
@@ -300,25 +300,18 @@ void GlauberIsing::glauber_flip(double lambda, int i)
     double de,etmp;
     de = 0.0; etmp = 0.0;
 
-    double r;
-    r = 0.0;
-
     double rn,boltz;
     rn = 0.0;
     boltz = 0.0;
 
-    eLG_i = 0.0;
+    eLG_i = model.get_energy(lambda, n, i);
 
-    // calculate Landau Ginzburg and Gaussian energies only
-    eLG_i = model.get_energy(lambda,n,i);
-
-    // add energy of backward neighboring cells
-
+    // add energy of neighboring cells
     int* ri;
     ri = lattice.unpack_position(i);
 
     int* nn;
-    nn = lattice.nearest_neighbors(n, ri);
+    nn = lattice.nearest_neighbors(ri);
 
     for (j=0; j<dim; j++)
     {

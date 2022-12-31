@@ -29,7 +29,8 @@ public:
 
     int flatten_position(int, int, int);
 
-    int* nearest_neighbors(int*, int*);
+    int* nearest_neighbors(int*);
+    int* nearest_neighbor_values(int*, int*);
 
     ~SimSpace(); 
 

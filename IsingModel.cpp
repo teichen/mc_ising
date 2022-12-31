@@ -45,13 +45,13 @@ double IsingModel::get_energy(double lambda, int* n, int ncell)
     int* r;
     r = lattice.unpack_position(ncell);
 
-    int* nn;
-    nn = lattice.nearest_neighbors(n, r);
+    int* nn_vals;
+    nn_vals = lattice.nearest_neighbor_values(n, r);
 
     int i;
     for (i=0; i<dim; i++)
     {
-        eLG = eLG + lambda * ni * nn[i];
+        eLG = eLG + lambda * ni * nn_vals[i];
     }
     
     return eLG;
