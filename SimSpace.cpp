@@ -51,18 +51,14 @@ double SimSpace::separation(double r1[3], double r2[3])
     return r;
 }
 
-int* SimSpace::unpack_position(int n)
+void SimSpace::unpack_position(int n, int r[3])
 {
     // z = i % L;
     // y = (i-z) % pow(L,2);
     // x = (i-z-y*L) % pow(L,dim);
-    static int r[3];
-
     r[2] = n % L;
     r[1] = (int)((n - r[2]) / L) % L;
     r[0] = (int)((n - r[2] - r[1] * L) / pow(L, 2)) % L;
-    
-    return r;
 }
 
 int SimSpace::flatten_position(int i, int j, int k)
@@ -74,10 +70,8 @@ int SimSpace::flatten_position(int i, int j, int k)
     return n;
 }
 
-int* SimSpace::nearest_neighbors(int* r)
+void SimSpace::nearest_neighbors(int* r, int nn[3])
 {
-    static int nn[3];
-
     if (r[0] == (L-1))
     {
         nn[0] =(int)(0*pow(L,2) + r[1]*L + r[2]);
@@ -102,19 +96,13 @@ int* SimSpace::nearest_neighbors(int* r)
     {
         nn[2] = (int)(r[0]*pow(L,2) + r[1]*L + r[2]+1);
     }
-
-    return nn;
 }
 
-int* SimSpace::nearest_neighbor_values(int* n, int* nn)
+void SimSpace::nearest_neighbor_values(int* n, int* nn, int nn_vals[3])
 {
-    static int nn_vals[3];
-
     nn_vals[0] = n[nn[0]];
     nn_vals[1] = n[nn[1]];
     nn_vals[2] = n[nn[2]];
-
-    return nn_vals;
 }
 
 SimSpace::~SimSpace()

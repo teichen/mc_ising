@@ -15,6 +15,7 @@
 #include <fstream>
 #include <time.h>
 #include <math.h>
+#include <gperftools/profiler.h>
 
 #include <algorithm>
 
@@ -73,6 +74,8 @@ GlauberIsing::GlauberIsing()
 
 GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda, int tsteps)
 {
+    ProfilerStart("/tmp/prof.out");
+
     restart = restart;
     logging = logging;
     lambda  = lambda;
@@ -226,6 +229,7 @@ void GlauberIsing::run(int tsteps)
         cout << "Accepted " << taccept << " Monte Carlo moves " << endl;
         cout << " " << endl;
     }
+    ProfilerStop();
 }
 
 void GlauberIsing::glauber_sweep(double lambda)
@@ -307,11 +311,11 @@ void GlauberIsing::glauber_flip(double lambda, int i)
     eLG_i = model.get_energy(lambda, n, i);
 
     // add energy of neighboring cells
-    int* ri;
-    ri = lattice.unpack_position(i);
+    int ri[3];
+    lattice.unpack_position(i, ri);
 
-    int* nn;
-    nn = lattice.nearest_neighbors(ri);
+    int nn[3];
+    lattice.nearest_neighbors(ri, nn);
 
     for (j=0; j<dim; j++)
     {

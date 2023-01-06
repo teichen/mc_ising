@@ -7,10 +7,10 @@ SHELL = /bin/sh
 
 OBJS_MC = main.o GlauberIsing.o SimSpace.o MonteCarlo.o IsingModel.o
 OBJS_SNAP = snapshot.o Visualizer.o SimSpace.o MonteCarlo.o
-CFLAGS =
+CFLAGS = -g -O0
 CC = clang++
 INCLUDES = 
-LIBS =
+LIBS = -L/usr/local/Cellar/gperftools/2.10/lib -lprofiler
 
 all:glauber_ising snapshot
 

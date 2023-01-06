@@ -28,13 +28,13 @@ int main()
     int i, j;
     int nsum = 0;
     
-    int* ri;
-    int* nn_vals;
+    int ri[3];
+    int nn_vals[3];
 
     for (i=0; i<(int)(glauber_ising.nL); i++)
     {
-        ri = glauber_ising.lattice.unpack_position(i);
-        nn_vals = glauber_ising.lattice.nearest_neighbor_values(glauber_ising.n, ri);
+        glauber_ising.lattice.unpack_position(i, ri);
+        glauber_ising.lattice.nearest_neighbor_values(glauber_ising.n, ri, nn_vals);
 
         for (j=0; j<(int)(glauber_ising.dim); j++)
         {
@@ -50,8 +50,8 @@ int main()
     nsum = 0;
     for (i=0; i<(int)(glauber_ising.nL); i++)
     {
-        ri = glauber_ising.lattice.unpack_position(i);
-        nn_vals = glauber_ising.lattice.nearest_neighbor_values(glauber_ising.n, ri);
+        glauber_ising.lattice.unpack_position(i, ri);
+        glauber_ising.lattice.nearest_neighbor_values(glauber_ising.n, ri, nn_vals);
 
         for (j=0; j<(int)(glauber_ising.dim); j++)
         {
@@ -66,8 +66,8 @@ int main()
     nsum = 0;
     for (i=0; i<(int)(glauber_ising.nL); i++)
     {
-        ri = glauber_ising.lattice.unpack_position(i);
-        nn_vals = glauber_ising.lattice.nearest_neighbor_values(glauber_ising.n, ri);
+        glauber_ising.lattice.unpack_position(i, ri);
+        glauber_ising.lattice.nearest_neighbor_values(glauber_ising.n, ri, nn_vals);
 
         for (j=0; j<(int)(glauber_ising.dim); j++)
         {

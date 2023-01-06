@@ -7,10 +7,10 @@ SHELL = /bin/sh
 
 OBJS_MODEL_TEST = ising_test.o ../SimSpace.o ../IsingModel.o
 OBJS_GLAUBER_TEST = glauber_test.o ../GlauberIsing.o ../SimSpace.o ../MonteCarlo.o ../IsingModel.o
-CFLAGS =
+CFLAGS = -g -O0
 CC = clang++
 INCLUDES =
-LIBS =
+LIBS = -L/usr/local/lib -L/usr/local/Cellar/gperftools/2.10/lib -lprofiler
 
 all:ising_test glauber_test
 

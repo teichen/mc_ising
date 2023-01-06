@@ -25,12 +25,12 @@ public:
 
     double separation(double[3],double[3]);
 
-    int* unpack_position(int);
+    void unpack_position(int, int[3]);
 
     int flatten_position(int, int, int);
 
-    int* nearest_neighbors(int*);
-    int* nearest_neighbor_values(int*, int*);
+    void nearest_neighbors(int*, int[3]);
+    void nearest_neighbor_values(int*, int*, int[3]);
 
     ~SimSpace(); 
 
