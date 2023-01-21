@@ -32,7 +32,12 @@ IsingModel::IsingModel()
 }
 
 double IsingModel::get_energy(double lambda, int* n, int ncell)
-/* Landau Ginzburg energy
+/* local Landau Ginzburg energy including nearest-neighbor interactions
+   with the local lattice cell
+   Args:
+           lambda (double): nearest-neighbror interaction strength
+           n (int*)       : binary field
+           ncell (int)    : lattice cell
 */
 {
     double eLG;

@@ -32,10 +32,7 @@ using std::ifstream;
 
 const double PI = 3.1415926535897932384626433832795028841971693;
 
-//-----------------------------------------------------------------//
 // Clocking prototype
-//-----------------------------------------------------------------//
-
 long long
 timeval_diff(struct timeval *difference,
              struct timeval *end_time,
@@ -53,8 +50,6 @@ timeval_diff(struct timeval *difference,
   difference->tv_sec =end_time->tv_sec -start_time->tv_sec ;
   difference->tv_usec=end_time->tv_usec-start_time->tv_usec;
 
-  /* Using while instead of if below makes the code slightly more robust. */
-
   while(difference->tv_usec<0)
   {
     difference->tv_usec+=1000000;
@@ -64,7 +59,7 @@ timeval_diff(struct timeval *difference,
   return 1000000LL*difference->tv_sec+
                    difference->tv_usec;
 
-} /* timeval_diff() */
+}
 
 using namespace std;
 
@@ -74,7 +69,13 @@ GlauberIsing::GlauberIsing()
 
 GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda, int tsteps)
 {
-    ProfilerStart("/tmp/prof.out");
+    /* Args:
+               restart (bool) : if true, read in initial boolean field
+               logging (bool) : if true, print Glauber dynamics
+               lambda (double): nearest-neighbor interaction strength
+               tsteps (int)   : number of sampling steps
+    */
+    ProfilerStart("/tmp/prof.out"); // memory profiler
 
     restart = restart;
     logging = logging;
@@ -85,10 +86,8 @@ GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda, int tsteps
     dim = lattice.dim; // dimensionality of lattice
     nL  = pow(L,dim);
 
-    //tsteps = mc.tsteps; // number of MC attempts
     twrite = mc.twrite; // write every twrite steps
-
-    n_rn = 10000; 
+    n_rn   = 10000; 
 
     mem_test = false;
     initarrays();
@@ -114,11 +113,14 @@ GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda, int tsteps
 
 void GlauberIsing::run(int tsteps)
 {
+    /* master method to calculate Glauber dynamics (Monte Carlo sampling) using
+       the Ising model
+    */
     struct timeval earlier;
     struct timeval later;
     struct timeval interval;
 
-    if(gettimeofday(&earlier,NULL)) //-----------Start clock ----------//
+    if(gettimeofday(&earlier,NULL)) // start clock
     {
         perror("third gettimeofday()");
         exit(1);
@@ -147,7 +149,7 @@ void GlauberIsing::run(int tsteps)
 
     for (i=0; i<(int)(pow(L,dim)); i++)
     {
-        eLG = model.get_energy(lambda, n, i);
+        eLG   = model.get_energy(lambda, n, i);
         e0_LG = e0_LG + eLG;
     }
 
@@ -180,13 +182,12 @@ void GlauberIsing::run(int tsteps)
         }
     }
 
-    eLG = 0.0; 
-
+    eLG   = 0.0; 
     e0_LG = eLG;
 
     for (i=0; i<(int)(pow(L,dim)); i++)
     {
-        eLG = model.get_energy(lambda, n, i);
+        eLG   = model.get_energy(lambda, n, i);
         e0_LG = e0_LG + eLG;
     }
 
@@ -212,7 +213,7 @@ void GlauberIsing::run(int tsteps)
         edump.close();
     }
 
-    if(gettimeofday(&later,NULL)) //------------Stop clock --------------//
+    if(gettimeofday(&later,NULL)) // stop clock
     {
         perror("fourth gettimeofday()");
         exit(1);
@@ -234,8 +235,10 @@ void GlauberIsing::run(int tsteps)
 
 void GlauberIsing::glauber_sweep(double lambda)
 {
-    // full Glauber sweep
-    
+    /* full Glauber sweep
+       Args:
+               lambda (double): nearest-neighbor interaction strength
+    */
     int i, j, k, ncell;
 
     for (i=0; i<nL; i++)
@@ -298,6 +301,11 @@ void GlauberIsing::glauber_sweep(double lambda)
 
 void GlauberIsing::glauber_flip(double lambda, int i)
 {
+    /* attempt to flip a local value of the Ising field
+       Args:
+               lambda (double): nearest-neighbor interaction strength
+               i (int)        : lattice site
+    */
     int j,k;
     j = 0; k = 0;
 
@@ -305,7 +313,7 @@ void GlauberIsing::glauber_flip(double lambda, int i)
     de = 0.0; etmp = 0.0;
 
     double rn,boltz;
-    rn = 0.0;
+    rn    = 0.0;
     boltz = 0.0;
 
     eLG_i = model.get_energy(lambda, n, i);
@@ -319,7 +327,7 @@ void GlauberIsing::glauber_flip(double lambda, int i)
 
     for (j=0; j<dim; j++)
     {
-        etmp = model.get_energy(lambda, n, nn[j]);
+        etmp  = model.get_energy(lambda, n, nn[j]);
         eLG_i = eLG_i + etmp;
     }
 
@@ -333,18 +341,16 @@ void GlauberIsing::glauber_flip(double lambda, int i)
     }
 
     eLG_f = 0.0;
-
     eLG_f = model.get_energy(lambda,n,i);
 
     for (j=0; j<dim; j++)
     {
-        etmp = model.get_energy(lambda, n, nn[j]);
+        etmp  = model.get_energy(lambda, n, nn[j]);
         eLG_f = eLG_f + etmp;
     }
 
     eLG = eLG + (eLG_f-eLG_i);
-
-    de = eLG_f-eLG_i;
+    de  = eLG_f-eLG_i;
 
     // acceptance criteria
 
@@ -361,12 +367,17 @@ void GlauberIsing::glauber_flip(double lambda, int i)
     else
     {
         n[i] = n0[i];
-        eLG = e0_LG;
+        eLG  = e0_LG;
     }
 }
 
 void GlauberIsing::read_set_field(int* n)
 {
+    /* if restarting an earlier simulation, set the initial Ising field
+       by reading from disk
+       Args:
+               n (int): Ising field
+    */
     std::ostringstream filenameStream;
     std:string filename;
 
@@ -391,6 +402,10 @@ void GlauberIsing::read_set_field(int* n)
 
 void GlauberIsing::init_field(int* n)
 {
+    /* random initialization of an Ising field
+       Args:
+               n (int): Ising field
+    */
     for (int j=0; j<(int)(pow(L,dim)); j++)
     {
         //n[j] = 1; // uniform
@@ -400,6 +415,11 @@ void GlauberIsing::init_field(int* n)
 
 void GlauberIsing::write_field(int* n, string filename)
 {
+    /* write out values of a boolean field
+       Args:
+               n (int)          : Ising field
+               filename (string): file name in which to dump Ising field values
+    */
     std::ofstream ndump;
 
     if (filename.find("restart") != std::string::npos)
