@@ -67,20 +67,20 @@ GlauberIsing::GlauberIsing()
 {
 }
 
-GlauberIsing::GlauberIsing(bool restart, bool logging, double lambda, int tsteps)
+GlauberIsing::GlauberIsing(bool& restart_sim, bool& logger, double& e_nn, int& steps)
 {
     /* Args:
-               restart (bool) : if true, read in initial boolean field
-               logging (bool) : if true, print Glauber dynamics
-               lambda (double): nearest-neighbor interaction strength
-               tsteps (int)   : number of sampling steps
+               restart_sim (bool) : if true, read in initial boolean field
+               logger (bool)      : if true, print Glauber dynamics
+               e_nn (double)      : nearest-neighbor interaction strength
+               steps (int)        : number of sampling steps
     */
     ProfilerStart("/tmp/prof.out"); // memory profiler
 
-    restart = restart;
-    logging = logging;
-    lambda  = lambda;
-    tsteps  = tsteps;
+    restart = restart_sim;
+    logging = logger;
+    lambda  = e_nn;
+    tsteps  = steps;
 
     L   = lattice.L;   // length of lattice (number of sites)
     dim = lattice.dim; // dimensionality of lattice

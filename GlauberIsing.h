@@ -23,7 +23,7 @@ public:
     bool mem_test;
 
     GlauberIsing();
-    GlauberIsing(bool,bool,double,int);
+    GlauberIsing(bool&,bool&,double&,int&);
 
     bool restart;
     bool logging;
@@ -33,11 +33,11 @@ public:
     void run(int);
 
     SimSpace lattice; // define the coarse lattice
-    int L; // length of lattice (number of sites)
+    int L;   // length of lattice (number of sites)
     int dim; // dimensionality of lattice
 
     MonteCarlo mc; // Monte Carlo parameterization
-    int twrite; // write every twrite steps
+    int twrite;    // write every twrite steps
 
     IsingModel model;
 
