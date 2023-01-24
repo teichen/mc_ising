@@ -20,12 +20,16 @@ public:
 
     MonteCarlo(); // build function + input
 
-    // ----------------------------------------------- //
-
     int tsteps; // number of MC attempts
     int twrite; // write every twrite steps
 
-    // ----------------------------------------------- //
+    void randomize_sampling(int);
+    bool trial_flip(int, double);
+
+    int n_rn;
+    double rn_flip[32*32*32];
+
+    void initarrays();
 
     ~MonteCarlo(); // destructor
 

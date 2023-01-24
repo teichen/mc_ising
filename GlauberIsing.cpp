@@ -87,7 +87,6 @@ GlauberIsing::GlauberIsing(bool& restart_sim, bool& logger, double& e_nn, int& s
     nL  = pow(L,dim);
 
     twrite = mc.twrite; // write every twrite steps
-    n_rn   = 10000; 
 
     mem_test = false;
     initarrays();
@@ -241,10 +240,7 @@ void GlauberIsing::glauber_sweep(double lambda)
     */
     int i, j, k, ncell;
 
-    for (i=0; i<nL; i++)
-    {
-        rn_flip[i] = (rand() % 1000) * 0.001;
-    }
+    mc.randomize_sampling(nL);
 
     // even x/z sweep, all y
     for (i=0; i<(int)(L/2); i++)
@@ -353,13 +349,10 @@ void GlauberIsing::glauber_flip(double lambda, int i)
     de  = eLG_f-eLG_i;
 
     // acceptance criteria
+    bool accept_flip;
+    accept_flip = mc.trial_flip(i, de);
 
-    rn = rn_flip[i];
-
-    boltz = exp(-de); // temperature = 1.0
-    // boltz = 1.0/(1.0+exp(de/temp));
-
-    if (rn <= boltz)
+    if (accept_flip)
     {
         n0[i] = n[i];
         e0_LG = eLG;

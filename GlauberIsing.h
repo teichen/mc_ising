@@ -50,9 +50,6 @@ public:
 
     double e0,e0_LG;
 
-    int n_rn;
-    double rn_flip[32*32*32];
-
     void initarrays();
 
     void glauber_sweep(double);
